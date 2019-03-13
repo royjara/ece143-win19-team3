@@ -139,8 +139,10 @@ def num_month(year):
                 tag.append(str(a) + '.' + '{:0=2}'.format(b))
         for a in range(2,50,12):
             ax_num.annotate(tag[a] + '  ' + str(num[a]), xy=(a,num[a]), xytext=(a-4, num[a] + 6000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
-        for a in [10, 25, 37, 44]:
-            ax_num.annotate(tag[a] + '  ' + str(num[a]), xy=(a,num[a]), xytext=(a-4, num[a] - 6000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
+        for a in [10, 22, 34, 46]:
+            ax_num.annotate(tag[a] + '  ' + str(num[a]), xy=(a,num[a]), xytext=(a-4, num[a] - 12000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
+        for a in [1, 25, 37]:
+            ax_num.annotate(tag[a] + '  ' + str(num[a]), xy=(a,num[a]), xytext=(a, num[a] - 3000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
         plt.xticks(x_axis, tag, rotation = 45)
         plt.show()
         
@@ -228,7 +230,7 @@ def bar_month():
     plt.xticks([i + 0.3 for i in x_axis], range(1,13))
     plt.xlabel('Month', fontsize = 20)
     plt.title('Number of Citations vs Month in Each Year', fontsize = 24)
-    plt.ylim([100000, 250000])
+    plt.ylim([120000, 220000])
     plt.legend()
 
     plt.show()
