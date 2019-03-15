@@ -3,6 +3,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdate
 import calmap
+'''
+    Chronological Analysis
+
+    Functions:
+    num_year()
+    num_month(year)
+    num_weekday(month, year)
+    dayofyear(year, month = [1,12])
+    bar_month()
+    timeofday(year)
+    bar_date(year)
+    bar_date_top(year, top = 10, reverse = False)
+    calheatmap(year)
+    
+    Author: Xu Zhu
+'''
 
 pd.plotting.register_matplotlib_converters()
 plt.rcParams['figure.figsize'] = (20.0, 15.0)
@@ -265,6 +281,7 @@ def timeofday(year):
 
     
     ax_num.annotate('8:00', xy=(16,num[800]), xytext=(12, num[800] - 6000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
+    ax_num.annotate('10:00', xy=(20,num[1000]), xytext=(20, num[800] + 6000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')    
     ax_num.annotate('12:00', xy=(24,num[1200]), xytext=(26, num[1200] - 6000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
 
     plt.xticks(range(0, 48, 6), [num.keys()[x] for x in range(0, 48, 6)], rotation = 0, fontsize = 14)
@@ -337,7 +354,7 @@ def calheatmap(year):
     plt.show()
     
 if __name__ == "__main__":
-    #num_year()
+    num_year()
     #dayofyear(2015, [1,4])
     #dayofyear(2016, [1,12])
     #dayofyear(2017, [1,12])
