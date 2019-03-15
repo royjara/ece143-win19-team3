@@ -2,10 +2,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdate
+import calmap
 
 pd.plotting.register_matplotlib_converters()
-plt.rcParams['figure.figsize'] = (30.0, 20.0)
+plt.rcParams['figure.figsize'] = (20.0, 15.0)
 plt.rcParams['figure.dpi'] = 100
+plt.rcParams['font.size'] = 16
 
 def plot_num_avg(x_axis, xlab, num, numlab, avg, avglab, title, isweek = False):
     '''
@@ -27,6 +29,7 @@ def plot_num_avg(x_axis, xlab, num, numlab, avg, avglab, title, isweek = False):
     ax_num.set_ylabel(numlab, fontsize = 20)
     ax_num.set_title(title, fontsize = 24)
     ax_num.set_ylim([min(num)*0.95, max(num)*1.05])
+    ax_num.yaxis.set_ticklabels(['1.8M', '1.9M', '2M', '2.1M', '2.2M', '2.3M'])
 
     ax_avg = ax_num.twinx()
     ln2 = ax_avg.plot(x_axis, avg, 'b--o', label='avg_fine')
@@ -35,13 +38,13 @@ def plot_num_avg(x_axis, xlab, num, numlab, avg, avglab, title, isweek = False):
 
     ln = ln1 + ln2
     labels = [l.get_label() for l in ln]
-    ax_num.legend(ln, labels, loc = 0)
+    ax_num.legend(ln, labels, loc = 0, fontsize = 16)
 
     #annotate
     for a,b in zip(x_axis, num):
-        ax_num.annotate(str(b), xy=(a,b), xytext=(a-0.05, b*1.0015))
+        ax_num.annotate(str(b), xy=(a,b), xytext=(a-0.15, b*1.002), fontsize = 16)
     for a,b in zip(x_axis, avg):
-        ax_avg.annotate(str("{:.2f}".format(b)), xy=(a,b), xytext=(a-0.03, b*1.0015))
+        ax_avg.annotate(str("{:.2f}".format(b)), xy=(a,b), xytext=(a-0.1, b*1.002), fontsize = 16)
 
     if isweek == True:
         plt.xticks(x_axis, dayname)
@@ -130,6 +133,7 @@ def num_month(year):
         ax_num.set_ylabel('Number of Citations per Month', fontsize = 20)
         ax_num.set_title('Number of citations vs Month Overall', fontsize = 24)
         ax_num.set_ylim([min(num)*0.9, max(num)*1.05])
+        ax_num.yaxis.set_ticklabels(['120K', '140K', '160K', '180K', '200K', '220K'])
 
 
         #annotate
@@ -143,7 +147,7 @@ def num_month(year):
             ax_num.annotate(tag[a] + '  ' + str(num[a]), xy=(a,num[a]), xytext=(a-4, num[a] - 12000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
         for a in [1, 25, 37]:
             ax_num.annotate(tag[a] + '  ' + str(num[a]), xy=(a,num[a]), xytext=(a, num[a] - 3000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
-        plt.xticks(x_axis, tag, rotation = 45)
+        plt.xticks([])
         plt.show()
         
         
@@ -171,7 +175,7 @@ def num_weekday(month, year):
         gp = df.loc[df['Issue Date'].dt.month == month]['Fine amount'].groupby(df['Issue Date'].dt.weekday)
         plot_num(x_axis = range(7), xlab = 'Months', num = gp.count(), numlab = 'Number of Citations per Weekday', title = str(year) + ' ' + calendar.month_name[month]+ ' Number of Citations vs Month', isweek = True)
 
-def dayofyear(year):
+def dayofyear(year, month = [1,12]):
     '''
     Plot a line chart. Number of citations vs Date in a specific year 
     Input:
@@ -179,8 +183,13 @@ def dayofyear(year):
     '''
     
     assert year in [2015, 2016, 2017, 2018]
+    assert isinstance(month, list)
+    assert isinstance(month[0], int) and month[0] > 0
+    assert isinstance(month[1], int) and month[1] < 13
     
     df = pd.read_csv(str(year)+'parking-citations.csv', parse_dates = ['Issue Date'])
+    df = df[df['Issue Date'].dt.month <= month[1]]
+    df = df[df['Issue Date'].dt.month >= month[0]]
     gp = df['Fine amount'].groupby(df['Issue Date'])
     fig = plt.figure()
     x_axis = gp.count().index
@@ -199,9 +208,9 @@ def dayofyear(year):
 
     #annotate
     plt.annotate('Max ' + str(gp.count().idxmax().to_pydatetime().date()) + '  ' + str(gp.count().max()), xy = (gp.count().idxmax(), gp.count().max()), xytext = (gp.count().idxmax() + pd.Timedelta(weeks = 2), gp.count().max()*1.05), arrowprops=dict(facecolor='steelblue', shrink=0.02), fontsize=15, color='black')
-    plt.annotate('Min ' + str(gp.count().idxmin().to_pydatetime().date()) + '  ' + str(gp.count().min()), xy = (gp.count().idxmin(), gp.count().min()), xytext = (gp.count().idxmin() - pd.Timedelta(weeks = 10), gp.count().min()*1.00), arrowprops=dict(facecolor='steelblue', shrink=0.02), fontsize=12, color='black')
+    plt.annotate('Min ' + str(gp.count().idxmin().to_pydatetime().date()) + '  ' + str(gp.count().min()), xy = (gp.count().idxmin(), gp.count().min()), xytext = (gp.count().idxmin() - pd.Timedelta(weeks = 6), gp.count().min()*1.00), arrowprops=dict(facecolor='steelblue', shrink=0.02), fontsize=15, color='black')
        
-    plt.xticks(pd.date_range(x_axis[0], x_axis[-1], freq = 'M'), rotation = 45)
+    plt.xticks(pd.date_range(x_axis[0], x_axis[-1], freq = 'M'), rotation = 0)
     plt.show()
 
 def bar_month():
@@ -258,7 +267,7 @@ def timeofday(year):
     ax_num.annotate('8:00', xy=(16,num[800]), xytext=(12, num[800] - 6000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
     ax_num.annotate('12:00', xy=(24,num[1200]), xytext=(26, num[1200] - 6000), arrowprops=dict(arrowstyle='->', connectionstyle='arc3'), fontsize=15, color='black')
 
-    plt.xticks(range(0, 48, 6), [num.keys()[x] for x in range(0, 48, 6)], rotation = 0)
+    plt.xticks(range(0, 48, 6), [num.keys()[x] for x in range(0, 48, 6)], rotation = 0, fontsize = 14)
     plt.show()
     
 def bar_date(year):
@@ -312,13 +321,27 @@ def bar_date_top(year, top = 10, reverse = False):
     plt.xticks(x_axis,[str(x.to_pydatetime().date()) for x in num.index],rotation = 45, fontsize = 14)
     plt.savefig('')
     plt.show()
+
+def calheatmap(year):
+    '''
+    Plot a Calendar heat map. Number of citations vs Date in a specific year 
+    Input:
+    year: year in [2015, 2016, 2017, 2018]
+    '''
+    
+    assert year in [2015, 2016, 2017, 2018]
+    
+    df = pd.read_csv(str(year)+'parking-citations.csv', parse_dates = ['Issue Date'])
+    gp = df['Fine amount'].groupby(df['Issue Date'])
+    calmap.calendarplot(gp.count(), fig_kws = {'figsize':(16,10)}, yearlabels = False, subplot_kws = {'title':'Number of Citations in Year ' + str(year)})
+    plt.show()
     
 if __name__ == "__main__":
-    num_year()
-    #dayofyear(2015)
-    #dayofyear(2016)
-    #dayofyear(2017)
-    #dayofyear(2018)
+    #num_year()
+    #dayofyear(2015, [1,4])
+    #dayofyear(2016, [1,12])
+    #dayofyear(2017, [1,12])
+    #dayofyear(2018, [1,4])
     #num_month(2015)
     #num_month(2016)
     #num_month(2017)
@@ -332,4 +355,5 @@ if __name__ == "__main__":
     #timeofday(2015)
     #timeofday(2016)
     #timeofday(2017)
-    #timeofday(2018)
+    timeofday(2018)
+    #calheatmap(2018)
