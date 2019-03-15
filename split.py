@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
 import pyproj
+'''
+    Split big dataset to several csv by year.
+    Author: Xu Zhu
+
+'''
 
 
 
@@ -38,17 +43,17 @@ def convert_position():
         x,y=df['Latitude'],df['Longitude']
         df['Longitude_WGS'],df['Latitude_WGS']=pyproj.transform(ESRI102645, WGS84, np.array(x), np.array(y))
         df = df[df['Latitude_WGS'] > 33]
-        df.to_csv(str(year) + 'gmaps.csv', mode = 'w', header = True)
+        df.to_csv(str(year) + 'gmaps.csv', mode = 'w', header = True, columns = ['Fine amount', 'Longitude_WGS', 'Latitude_WGS', 'Issue Date'])
     print('Convert done!')
 
 if __name__ == "__main__":
-    filepath = 'C:\\Users\\XZ\\ECE143Proj\\parking-citations.csv'
+    filepath = 'parking-citations.csv'
     availcols = ['Issue Date', 'Issue time', 'RP State Plate', 'Make', 'Body Style',
              'Color', 'Violation Description', 'Fine amount', 'Latitude', 'Longitude']
-    split_year(filepath, '2015', availcols)
-    split_year(filepath, '2016', availcols)
-    split_year(filepath, '2017', availcols)
-    split_year(filepath, '2018', availcols)
+    #split_year(filepath, '2015', availcols)
+    #split_year(filepath, '2016', availcols)
+    #split_year(filepath, '2017', availcols)
+    #split_year(filepath, '2018', availcols)
     convert_position()
            
     
